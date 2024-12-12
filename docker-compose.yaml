@@ -1,0 +1,107 @@
+services:
+  # Hadoop NameNode: Manages metadata and file system namespace for the HDFS cluster
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop2.7.4-java8
+    container_name: namenode
+    environment:
+      - CLUSTER_NAME=hadoop-cluster
+    ports:
+      - "9000:50070"  # Web UI for Namenode
+      - "8020:8020"    # Namenode RPC
+    volumes:
+      - ./core-site.xml:/etc/hadoop/core-site.xml
+      - namenode_data:/hadoop/dfs/name
+    networks:
+      - hadoop_network
+
+  # Hadoop DataNode 1: Stores actual HDFS blocks and communicates with the NameNode
+  datanode1:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop2.7.4-java8
+    container_name: datanode1
+    environment:
+      - CLUSTER_NAME=hadoop-cluster
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:8020
+    ports:
+      - "9001:50075"  # Web UI for Datanode
+    volumes:
+      - datanode1_data:/hadoop/dfs/data
+    networks:
+      - hadoop_network
+    depends_on:
+      - namenode
+
+  # Hadoop DataNode 2: Another DataNode to store HDFS blocks
+  datanode2:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop2.7.4-java8
+    container_name: datanode2
+    environment:
+      - CLUSTER_NAME=hadoop-cluster
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:8020
+    ports:
+      - "9002:50075"  # Web UI for Datanode
+    volumes:
+      - datanode2_data:/hadoop/dfs/data
+    networks:
+      - hadoop_network
+    depends_on:
+      - namenode
+
+  # Zeppelin: Interactive notebook for data visualization and analytics
+  zeppelin:
+    image: apache/zeppelin:0.9.0
+    container_name: zeppelin
+    ports:
+      - "8085:8080"  # Zeppelin Web UI
+    networks:
+      - hadoop_network
+    depends_on:
+      - spark-master
+
+  # Spark Master: Manages Spark jobs and worker coordination
+  spark-master:
+    image: bde2020/spark-master:2.4.0-hadoop2.7
+    container_name: spark-master
+    environment:
+      - SPARK_MODE=master
+    ports:
+      - "8080:8080"  # Web UI for Spark Master
+      - "7077:7077"  # Spark Master RPC
+    networks:
+      - hadoop_network
+
+  # Spark Worker 1: Executes tasks assigned by the Spark Master
+  spark-worker1:
+    image: bde2020/spark-worker:2.4.0-hadoop2.7
+    container_name: spark-worker1
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER=spark://spark-master:7077
+    ports:
+      - "8081:8081"  # Web UI for Spark Worker 1
+    networks:
+      - hadoop_network
+    depends_on:
+      - spark-master
+
+  # Spark Worker 2: Another worker to execute tasks assigned by the Spark Master
+  spark-worker2:
+    image: bde2020/spark-worker:2.4.0-hadoop2.7
+    container_name: spark-worker2
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER=spark://spark-master:7077
+    ports:
+      - "8082:8081"  # Web UI for Spark Worker 2
+    networks:
+      - hadoop_network
+    depends_on:
+      - spark-master
+
+networks:
+  hadoop_network:
+    driver: bridge
+
+volumes:
+  namenode_data:
+  datanode1_data:
+  datanode2_data:
