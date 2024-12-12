@@ -39,7 +39,7 @@ The infrastructure is built with the following components:
 ### Step 1: Start the Infrastructure
 1. Clone this repository:
    ```bash
-   git clone <repository_url>
+   git clone [repository_url](https://github.com/SETU-IFBD/ca3-GokulT01.git)
    cd big_data_infrastructure
    ```
 
@@ -146,6 +146,9 @@ To add more datanodes:
   ```bash
   hdfs dfs -setrep -R 2 /iot_data
   ```
+
+## Video presentation link
+The link takes to the demostration of my BIG DATA INFRASTRUCTURE [Videolink](https://setuo365-my.sharepoint.com/:v:/g/personal/c00313519_setu_ie/ESM0W-GYop9Etl6GTiV5JBAB186cHhyyzus9nG1rrhIx6w?e=kvy24P&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D)
 
 ## Conclusion
 This repository demonstrates a complete Big Data Infrastructure that integrates HDFS for storage, Spark for processing, and Zeppelin for visualization. It is designed to handle distributed workloads efficiently while ensuring fault tolerance and scalability.
